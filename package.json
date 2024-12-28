@@ -13,7 +13,7 @@
     "npm": ">=9"
   },
   "scripts": {
-    "test": "jest --watch --coverage",
+    "test": "jest --watchAll --coverage",
     "build": "tsup",
     "watch": "tsup --watch"
   },
