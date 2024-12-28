@@ -128,3 +128,15 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+##################################
+# Customizados 
+/node_modules
+
+# Ignore test-related files
+/coverage.data
+/coverage/
+/reports/
+# Build files
+/dist
