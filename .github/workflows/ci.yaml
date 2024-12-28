@@ -1,0 +1,29 @@
+name: "Tests"
+
+on:
+  pull_request:
+    branches:         # array of glob patterns matching against refs/heads. Optional; defaults to all
+      - master        # triggers on pulls to main
+  push:
+    branches:         # array of glob patterns matching against refs/heads. Optional; defaults to all
+      - master        # triggers on pushes that contain changes in main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x, 21.x]
+    steps:
+      - uses: actions/checkout@v4.2.2
+        name: Checkout
+      - uses: actions/setup-node@v4.1.0
+        name: Setup Node.js ${{ matrix.node-version }} 
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Run npm ci
+        run: npm ci
+      - name: Run tests
+        run: npm test
+    
