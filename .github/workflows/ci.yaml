@@ -84,6 +84,5 @@ jobs:
       - run: find .
       - name: Run npm publish
         run: npm publish --provenance --access public
-        working-directory: ./package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
