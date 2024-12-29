@@ -2,11 +2,11 @@ name: "CI"
 
 on:
   pull_request:
-    branches:         # array of glob patterns matching against refs/heads. Optional; defaults to all
-      - master        # triggers on pulls to main
+    branches:         
+      - master
   push:
-    branches:         # array of glob patterns matching against refs/heads. Optional; defaults to all
-      - master        # triggers on pushes that contain changes in main
+    branches:        
+      - master       
 env:
   DEFAULT_NODE_VERSION: 20.x
 jobs:
@@ -15,14 +15,13 @@ jobs:
     outputs:
       DEFAULT_NODE_VERSION: ${{ env.DEFAULT_NODE_VERSION }}
     steps:
-      - run: echo ""
+      - run: echo "Preparing definitions..."
   Test:
     needs: Definitions
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ "${{ needs.Definitions.outputs.DEFAULT_NODE_VERSION }}" ]
-        #, 21.x, 22.x, 23.x]
+        node-version: [ "${{ needs.Definitions.outputs.DEFAULT_NODE_VERSION }}", "21.x", "22.x", "23.x" ]
     steps:
       - uses: actions/checkout@v4.2.2
         name: Checkout
@@ -50,8 +49,6 @@ jobs:
         run: npm ci
       - name: Run build
         run: npm run build
-      # - name: Run npm publish
-      #   run: npm publish
       - name: Run npm pack
         run: npm pack
       - name: Extract package
@@ -74,14 +71,13 @@ jobs:
       - uses: actions/download-artifact@v4.1.8
         with:
           name: package
-      # - name: Extract package
-      #   run: tar -xvf *.tgz
       - uses: actions/setup-node@v4.1.0
         name: Setup Node.js
         with:
           node-version: ${{ needs.Definitions.outputs.DEFAULT_NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
       - run: find .
+        name: List package files
       - name: Run npm publish
         run: npm publish --provenance --access public
         env:
