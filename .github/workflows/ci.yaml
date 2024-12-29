@@ -7,13 +7,21 @@ on:
   push:
     branches:         # array of glob patterns matching against refs/heads. Optional; defaults to all
       - master        # triggers on pushes that contain changes in main
-
+env:
+  DEFAULT_NODE_VERSION: 20.x
 jobs:
+  Definitions:
+    runs-on: ubuntu-latest
+    outputs:
+      DEFAULT_NODE_VERSION: ${{ env.DEFAULT_NODE_VERSION }}
+    steps:
+      - run: echo ""
   Test:
+    needs: Definitions
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [ "${{ needs.Definitions.outputs.DEFAULT_NODE_VERSION }}" ]
         #, 21.x, 22.x, 23.x]
     steps:
       - uses: actions/checkout@v4.2.2
@@ -28,7 +36,7 @@ jobs:
       - name: Run tests
         run: npm test
   Build:
-    needs: Test
+    needs: [Test, Definitions]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
@@ -36,7 +44,7 @@ jobs:
       - uses: actions/setup-node@v4.1.0
         name: Setup Node.js
         with:
-          node-version: 20.x
+          node-version: ${{ needs.Definitions.outputs.DEFAULT_NODE_VERSION }}
           cache: 'npm'
       - name: Run npm ci
         run: npm ci
@@ -53,8 +61,9 @@ jobs:
           path: '*.tgz'
 
   Deploy:
-    needs: Build
+    needs: [Build, Definitions]
     runs-on: ubuntu-latest
+    environment: npmjs
     permissions:
       contents: read
       packages: write
@@ -67,10 +76,10 @@ jobs:
       - uses: actions/setup-node@v4.1.0
         name: Setup Node.js
         with:
-          node-version: 20.x
+          node-version: ${{ needs.Definitions.outputs.DEFAULT_NODE_VERSION }}
       - run: find .
-  #     - name: Run npm publish
-  #       run: npm publish
-        # working-directory: ./package
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Run npm publish
+        run: npm publish
+        working-directory: ./package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
