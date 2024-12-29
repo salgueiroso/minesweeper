@@ -41,8 +41,8 @@ jobs:
         run: npm ci
       - name: Run build
         run: npm run build
-      - name: Run npm publish
-        run: npm publish
+      # - name: Run npm publish
+      #   run: npm publish
       - name: Run npm pack
         run: npm pack
       - name: Archive build
