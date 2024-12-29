@@ -54,11 +54,13 @@ jobs:
       #   run: npm publish
       - name: Run npm pack
         run: npm pack
+      - name: Extract package
+        run: tar -xvf *.tgz
       - name: Archive build
         uses: actions/upload-artifact@v4.5.0 
         with:
           name: package
-          path: '*.tgz'
+          path: './package'
 
   Deploy:
     needs: [Build, Definitions]
@@ -72,8 +74,8 @@ jobs:
       - uses: actions/download-artifact@v4.1.8
         with:
           name: package
-      - name: Extract package
-        run: tar -xvf *.tgz
+      # - name: Extract package
+      #   run: tar -xvf *.tgz
       - uses: actions/setup-node@v4.1.0
         name: Setup Node.js
         with:
